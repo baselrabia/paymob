@@ -16,13 +16,13 @@ In `config/app.php` file
 ```php
 'providers' => [
     ...
-    baselrabia\PayMob\PayMobServiceProvider::class,
+    Basel\PayMob\PayMobServiceProvider::class,
     ...
 ];
 
 'aliases' => [
     ...
-    'PayMob' => baselrabia\PayMob\Facades\PayMob::class,
+    'PayMob' => Basel\PayMob\Facades\PayMob::class,
     ...
 ];
 ```
