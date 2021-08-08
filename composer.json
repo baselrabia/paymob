@@ -26,10 +26,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Basel\\Paymob\\PayMobServiceProvider"
+                "Basel\\PayMob\\PayMobServiceProvider"
             ],
             "aliases": {
-                "Paymob": "Basel\\Paymob\\Facades\\Paymob"
+                "Paymob": "Basel\\PayMob\\Facades\\Paymob"
             }
         }
     }
