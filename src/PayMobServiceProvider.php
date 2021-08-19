@@ -18,6 +18,11 @@ class PayMobServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->bootForConsole();
         }
+        $this->publishes([
+            __DIR__ . '/Controllers/DummyController.php' => app_path('Http/Controllers/DummyController.php'),
+            __DIR__ . '/Controllers/ApiDummyController.php' => app_path('Http/Controllers/ApiDummyController.php')
+        ]);
+
     }
 
     /**

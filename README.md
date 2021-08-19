@@ -45,6 +45,41 @@
   ], function () {
       Basel\PayMob\PayMobRoutes::routes();
   });
+
+  // OR You Can Use your Own routes like this 
+  // I used the package in Apis to provide Payment with the mobile APP
+      Route::group([
+        'prefix'     => 'payment',
+        'as'         => 'order.',
+        // 'middleware' => ,
+    ],
+        function () {
+            // ctf0\PayMob\PayMobRoutes::routes();
+
+            $controller = config('paymob.controller', '\Basel\PayMob\Controllers\DummyController');
+
+            // Route::get('checkout', [
+            //     'as'   => 'checkout',
+            //     'uses' => "$controller@checkOut",
+            // ]);
+
+            Route::post('process', [
+                'as'   => 'process',
+                'uses' => "$controller@process",
+            ])->middleware(['auth:student', 'scopes:student']);
+
+            Route::get('complete', [
+                'as'   => 'complete',
+                'uses' => "$controller@complete",
+            ]);
+
+            Route::get('failed', [
+                'as'   => 'failed',
+                'uses' => "$controller@failed",
+            ]);
+        }
+    );
+
   ```
 
 - add `Billable` to the model you will be billing.
@@ -65,7 +100,7 @@
               'email'        => $this->email,
               'first_name'   => $this->first_name,
               'last_name'    => $this->last_name,
-              'street'       => $this->address,
+              'street'       => $this->address ?? "NA",
               'phone_number' => $this->phone_number,
           ];
       }
