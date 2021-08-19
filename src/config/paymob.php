@@ -1,59 +1,31 @@
 <?php
 
-
 return [
-
-    /*
-    |--------------------------------------------------------------------------
-    | PayMob Default Order Model
-    |--------------------------------------------------------------------------
-    |
-    | This option defines the default Order model.
-    |
-    */
-
-    'order' => [
-        'model' => 'App\Order'
+    'controller' => '\Basel\PayMob\Controllers\DummyController',
+    'accept'     => [
+        'api_key'         => env('ACCEPT_API_KEY'),
+        'merchant_id'     => env('ACCEPT_MERCHANT_ID'),
+        'delivery_needed' => false,
+        'conversion_rate' => 100, // cents
+        'currency'        => 'EGP',
+        'exp_after'       => 10, // seconds
+        'min_amount'      => 5, // pounds
+        'url'             => [
+            'token'       => 'https://accept.paymobsolutions.com/api/auth/tokens',
+            'order'       => 'https://accept.paymobsolutions.com/api/ecommerce/orders',
+            'payment_key' => 'https://accept.paymobsolutions.com/api/acceptance/payment_keys',
+            'refund'      => 'https://accept.paymobsolutions.com/api/acceptance/void_refund/refund',
+            'hmac'        => 'https://accept.paymobsolutions.com/api/acceptance/transactions',
+        ],
+        'payment_types' => [
+            'card_payment' => [
+                'url'            => 'https://accept.paymobsolutions.com/api/acceptance/iframes/' . env('ACCEPT_CARD_IFRAME_ID'),
+                'integration_id' => env('ACCEPT_CARD_INTEGRATION_ID'),
+            ],
+            'mobile_wallet' => [
+                'url'            => 'https://accept.paymobsolutions.com/api/acceptance/payments/pay',
+                'integration_id' => env('ACCEPT_MW_INTEGRATION_ID'),
+            ],
+        ],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | PayMob Api Key
-    |--------------------------------------------------------------------------
-    |
-    | This is your PayMob api key to make auth request.
-    |
-    */
-
-    'api_key' => env('PAYMOB_API_KEY'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | PayMob integration ids and iframe id
-    |--------------------------------------------------------------------------
-    |
-    | This is your PayMob integration ids and iframe id.
-    |
-    */
-
-    'integration_id_credit' => env('PAYMOB_INTEGRATION_ID_CREDIT'),
-    'integration_id_cash' => env('PAYMOB_INTEGRATION_ID_CASH'),
-    'integration_id_wallet' => env('PAYMOB_INTEGRATION_ID_WALLET'),
-    'integration_id_aman' => env('PAYMOB_INTEGRATION_ID_AMAN'),
-    'iframe_id' => env('PAYMOB_IFRAME_ID'),
-
-
-    /*
-      |--------------------------------------------------------------------------
-      | PayMob integration Endpoints URL
-      |--------------------------------------------------------------------------
-      |
-      | This is  PayMob Endpoints URL.
-      |
-      */
-
-      'authentication_token_endpoint' => env('PAYMOB_AUTHENTICATION_TOKEN_ENDPOINT'),
-      'create_order_endpoint' => env('CREATE_ORDER_ENDPOINT'),
-      'payment_key_token_endpoint' => env('PAYMENT_KEY_TOKEN_ENDPOINT')
-
 ];

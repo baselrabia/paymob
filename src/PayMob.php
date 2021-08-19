@@ -2,127 +2,114 @@
 
 namespace Basel\PayMob;
 
-use GuzzleHttp\Client;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Http;
 
 class PayMob
 {
-    protected $client;
-
-    protected $integrationID;
-
+    protected $auth_token;
 
     public function __construct()
     {
-        $this->client = new Client();
-
-        $this->integrationID = config('paymob.integration_id');
+        $this->auth_token = $this->getAuthToken();
     }
 
+    /* -------------------------------------------------------------------------- */
+    /*                                   HELPERS                                  */
+    /* -------------------------------------------------------------------------- */
+
+    protected function getConfigKey($key)
+    {
+        return Arr::get(
+            config('paymob.accept'),
+            str_replace('..', '.', $key)
+        );
+    }
+
+    protected function getAmountInCents($amount)
+    {
+        return $amount * $this->getConfigKey('conversion_rate');
+    }
+
+    protected function getCurrency()
+    {
+        return $this->getConfigKey('currency');
+    }
+
+    /* -------------------------------------------------------------------------- */
+    /*                                    AUTH                                    */
+    /* -------------------------------------------------------------------------- */
 
     /**
-     * @return mixed
+     * 1. https://acceptdocs.paymobsolutions.com/docs/accept-standard-redirect#1-authentication-request.
      */
-    public function getAuthenticationToken()
+    protected function getAuthToken()
     {
+        $response = Http::post(
+            $this->getConfigKey('url.token'),
+            ['api_key' => $this->getConfigKey('api_key')]
+        )->throw();
 
-        $response = $this->client->request('POST', config('paymob.authentication_token_endpoint'), [
-            'json' => [
-                "api_key" => config('paymob.api_key'),
-            ]
-        ]);
-
-        return json_decode($response->getBody()->getContents());
-
+        return $response['token'];
     }
 
+    /* -------------------------------------------------------------------------- */
+    /*                                    MISC                                    */
+    /* -------------------------------------------------------------------------- */
 
     /**
-     * @param $token
-     * @param $merchantId
-     * @param $amountInCents
-     * @param $merchantOrderId
-     * @param string $currency
-     * @return mixed
+     * validate hmac for data integrity check.
+     *
+     * https://acceptdocs.paymobsolutions.com/docs/hmac-calculation.
+     *
+     * @param string $hmac
+     * @param int    $trans_id
+     *
+     * @return bool
      */
-    public function makeOrder($token, $merchantId, $amountInCents, $merchantOrderId, $currency = 'EGP')
+    public function validateHmac($hmac, $trans_id)
     {
+        $url = $this->getConfigKey('url.hmac');
 
-        $response = $this->client->request('POST', config('paymob.create_order_endpoint'), [
-            'json' => [
-                'auth_token' => $token,
-                'delivery_needed' => 'false',
-                'merchant_id' => $merchantId,      // merchant_id obtained from step 1
-                'amount_cents' => $amountInCents,
-                'currency' => $currency,
-                'merchant_order_id' => $merchantOrderId,
-                'notify_user_with_email' => true,
-            ]
-        ]);
+        $response = Http::withToken($this->auth_token)
+            ->get("$url/$trans_id/hmac_calc")
+            ->throw();
 
-        return json_decode($response->getBody()->getContents());
+        return $response['hmac'] == $hmac ?: abort(400, __('paymob::messages.incorrect_hmac'));
     }
-
 
     /**
-     * @param $token
-     * @param $amountCents
-     * @param $orderId
-     * @param $billingData
-     * @param string $currency
-     * @return mixed
+     * check for minimum amount limits.
+     *
+     * @param [type] $total
      */
-    public function createPaymentKeyToken(
-        $token,
-        $amountCents,
-        $orderId,
-        $billingData,
-        $currency = 'EGP'
-    )
+    public function checkForMinAmount($total)
     {
-        $response = $this->client->request('POST', config('paymob.payment_key_token_endpoint'), [
-            'json' => [
-                "auth_token" => $token,
-                "amount_cents" => $amountCents,
-                "expiration" => 36000,
-                "order_id" => $orderId,    // id obtained in step 2
-                "currency" => $currency,
-                "integration_id" => $this->integrationID, // card integration_id will be provided upon signing up,
-                "lock_order_when_paid" => "true",
-                "billing_data" => [
-                    "apartment" => $billingData['apartment'],
-                    "email" => $billingData['email'],
-                    "floor" => $billingData['floor'],
-                    "first_name" => $billingData['first_name'],
-                    "street" => $billingData['street'],
-                    "building" => $billingData['building'],
-                    "phone_number" => $billingData['phone_number'],
-                    "city" => $billingData['city'],
-                    "country" => $billingData['country'],
-                    "last_name" => $billingData['last_name'],
-                ],
-            ]
-        ]);
+        $min  = $this->getConfigKey('min_amount');
+        $curr = $this->getCurrency();
 
-        return json_decode($response->getBody()->getContents())->token;
+        if ($total < $min) {
+            abort(422, __('paymob::messages.min_amount', ['attr' => "$min $curr"]));
+        }
 
+        return true;
     }
-
 
     /**
-     * @param string
-     * @param array|$source
-     * @return mixed
+     * https://acceptdocs.paymobsolutions.com/docs/refund-transaction.
+     *
+     * @param int       $trans_id
+     * @param float|int $amount
      */
-    public function createPayRequest($paymentKey, $source)
+    public function refund($trans_id, $amount)
     {
-        $response = $this->client->request('POST', config('paymob.pay_request_endpoint'), [
-            'json' => [
-                "source" => $source,
-                "payment_token" => $paymentKey
-            ]
-        ]);
+        $response = Http::withToken($this->auth_token)
+            ->post($this->getConfigKey('url.refund'), [
+                'transaction_id' => $trans_id,
+                'amount_cents'   => $this->getAmountInCents($amount),
+            ])
+            ->throw();
 
-        return json_decode($response->getBody()->getContents());
+        return $response;
     }
-
 }

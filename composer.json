@@ -2,21 +2,23 @@
     "name": "baselrabia/paymob",
     "description": "A Package to help with Paymob integration",
     "type": "library",
-    "keywords": [
-        "php",
-        "paymob",
-        "weaccept",
-        "gateway",
-        "online",
-        "payment",
-        "laravel"
-    ],
+    "homepage": "https://github.com/baselrabia/paymob",
     "license": "MIT",
     "authors": [
         {
             "name": "basel rabia",
             "email": "baselrabia@gmail.com"
         }
+    ],
+    "keywords": [
+        "Laravel",
+        "PayMob",
+        "php",
+        "paymob",
+        "weaccept",
+        "gateway",
+        "online",
+        "payment"
     ],
     "autoload": {
         "psr-4": {
@@ -29,7 +31,7 @@
                 "Basel\\PayMob\\PayMobServiceProvider"
             ],
             "aliases": {
-                "Paymob": "Basel\\PayMob\\Facades\\Paymob"
+                "PayMob": "Basel\\PayMob\\Facades\\PayMob"
             }
         }
     }
