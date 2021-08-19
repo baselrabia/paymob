@@ -27,18 +27,20 @@ class DummyController extends Controller
     public function process(Request $request)
     {
         $request->validate([
-            'payment_type' => [
-                'required',
-                'string',
-            ],
+            'order_id' => 'required|exists:orders,id',
+            'payment_type' => 'nullable|string',
         ]);
+        
+        $order = Order::find($request->order_id);
 
         $payment_type = $request->payment_type;
         $user         = $request->user();
-        $total        = 0; // order total
+        $total        = $order->price; // order total
 
         try {
-            return (new CreditCard($user))->checkOut($total); // or MobileWallet, etc..
+            $link =  (new CreditCard($user, $order->id))->checkOut($total); // or MobileWallet, etc..
+            //$order->update($link);
+            return $link;
         } catch (RequestException $e) {
             return __('something went wrong, please try again later');
         }
