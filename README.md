@@ -33,6 +33,18 @@
 
 <br>
 
+- Update your `.env` file
+
+  ```shell
+  
+ACCEPT_API_KEY=
+ACCEPT_MERCHANT_ID=
+ACCEPT_CARD_IFRAME_ID=
+ACCEPT_CARD_INTEGRATION_ID=
+ACCEPT_MW_INTEGRATION_ID=
+
+  ```
+
 ## Setup
 
 - add the package routes to your `routes/web.php` ex.
@@ -122,6 +134,19 @@
   | GET  | `checkOut` | returns the view where the user will press the checkout btn                                                                                                                      |
   | POST | `process`  | get the selected payment type & make a request to paymob server                                                                                                                  |
   | GET  | `complete` | check for the transaction hmac & save it to your server, for more info [check](https://acceptdocs.paymobsolutions.com/docs/transaction-callbacks#transaction-response-callback). |
+
+
+- test Card 
+ ```php
+MasterCard
+Card Number	      =>  2223000000000007
+Cardholder Name	  =>  Test Account
+Expiry Month  	  => 	01
+Expiry Year		    =>  39
+CVV	              =>  100
+ ```
+
+-
 
 ### # Refund
 
