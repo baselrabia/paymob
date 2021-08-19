@@ -115,7 +115,7 @@
 
 - update [`controller`](./src/config/paymob.php) with your own controller, which should have 3 methods
 
-  > you can check [`DummyController`](./src/Controllers/DummyController.php) for a more detailed overview.
+  > you can check [`DummyController`](./src/Controllers/DummyController.php) Or [`ApiDummyController`](./src/Controllers/ApiDummyController.php)  for a more detailed overview.
 
   | type | @method    | return                                                                                                                                                                           |
   | ---- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
