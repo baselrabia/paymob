@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'controller' => '\Basel\PayMob\Controllers\DummyController',
+    'controller' => '\App\Http\Controllers\DummyController',
+    // 'controller' => '\App\Http\Controllers\ApiDummyController',
     'accept'     => [
         'api_key'         => env('ACCEPT_API_KEY'),
         'merchant_id'     => env('ACCEPT_MERCHANT_ID'),
