@@ -35,15 +35,13 @@
 
 - Update your `.env` file
 
-  ```shell
-  
+```shell
 ACCEPT_API_KEY=
 ACCEPT_MERCHANT_ID=
 ACCEPT_CARD_IFRAME_ID=
 ACCEPT_CARD_INTEGRATION_ID=
 ACCEPT_MW_INTEGRATION_ID=
-
-  ```
+```
 
 ## Setup
 
@@ -137,14 +135,17 @@ ACCEPT_MW_INTEGRATION_ID=
 
 
 - test Card 
- ```php
-MasterCard
-Card Number	      =>  2223000000000007
-Cardholder Name	  =>  Test Account
-Expiry Month  	  => 	01
-Expiry Year		    =>  39
-CVV	              =>  100
- ```
+
+    > MasterCard
+    
+   | Key                | Value                                                                                                                                                                             |
+   | -------------------| -------------------
+    Card Number         |  2223000000000007
+    Cardholder Name     |  Test Account 
+    Expiry Month  	    |  01 
+    Expiry Year		    |  39 
+    CVV	                |  100 
+            
 
 -
 
